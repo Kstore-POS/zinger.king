@@ -228,6 +228,7 @@ img {
 .logo-icon-wrap {
   width: 48px;
   height: 48px;
+  min-width: 48px;
   border-radius: var(--radius-md);
   background: var(--grad-primary);
   display: flex;
@@ -254,6 +255,9 @@ img {
 .flame-svg {
   width: 28px;
   height: 28px;
+  max-width: 28px;
+  max-height: 28px;
+  display: block;
 }
 
 .brand-details {
@@ -827,11 +831,6 @@ img {
 
 .badge-tag.spicy {
   background: var(--accent-red);
-  color: #fff;
-}
-
-.badge-tag.vegetarian {
-  background: var(--accent-green);
   color: #fff;
 }
 

@@ -14,8 +14,63 @@
   <!-- أيقونات FontAwesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
-  <!-- ملف التنسيقات الرئيسي -->
-  <link rel="stylesheet" href="/zinger.king/css/style.css">
+  <!-- تنسيقات حماية مدمجة (تضمن ظهور الموقع والشعار والألوان بسلاسة وفورية) -->
+  <style>
+    /* أبعاد وتنسيقات الشعار الملكي لمنع تمدد الـ SVG في أي ظرف */
+    .flame-svg, svg.flame-svg {
+      width: 28px !important;
+      height: 28px !important;
+      max-width: 28px !important;
+      max-height: 28px !important;
+      display: block;
+    }
+    .logo-icon-wrap {
+      width: 48px !important;
+      height: 48px !important;
+      min-width: 48px !important;
+      max-width: 48px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff5722, #ff8a00);
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+    .logo-icon-wrap.small {
+      width: 36px !important;
+      height: 36px !important;
+      min-width: 36px !important;
+      max-width: 36px !important;
+    }
+    .logo-icon-wrap.small .flame-svg {
+      width: 20px !important;
+      height: 20px !important;
+    }
+    /* إخفاء النوافذ المنبثقة افتراضياً حتى يطلبها المستخدم */
+    .modal-backdrop, .cart-drawer-backdrop {
+      display: none;
+    }
+    .modal-backdrop.active {
+      display: flex !important;
+    }
+    .cart-drawer-backdrop.active {
+      display: block !important;
+    }
+    /* إعدادات الخلفية والخط لمنع الوميض الأبيض */
+    body {
+      background-color: #0f0f14;
+      color: #f3f4f6;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+
+  <!-- ملف التنسيقات الرئيسي (مسارات نسبية متوافقة 100% مع GitHub Pages وكافة البيئات) -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -44,9 +99,9 @@
     <div class="container header-container">
       <!-- الشعار واسم المطعم (يدعم صورة لوجو خارجية مع بديل SVG متقن لزنجر كينج) -->
       <a href="#" class="brand-logo" aria-label="الصفحة الرئيسية لمطعم زنجر كينج">
-        <div class="logo-icon-wrap" id="logoContainer">
+        <div class="logo-icon-wrap" id="logoContainer" style="width: 48px; height: 48px; min-width: 48px; max-width: 48px; display: inline-flex; align-items: center; justify-content: center;">
           <!-- شعار التاج والنار المخصص لـ زنجر كينج (Zinger King) -->
-          <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor">
+          <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28" style="width: 28px; height: 28px; max-width: 28px; display: block;">
             <!-- تاج الملك مع شعلة القرمشة -->
             <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V17H19V19Z"/>
           </svg>
@@ -381,8 +436,8 @@
       <!-- نبذة عن زنجر كينج -->
       <div class="footer-col brand-col">
         <div class="footer-logo">
-          <div class="logo-icon-wrap small">
-            <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor">
+          <div class="logo-icon-wrap small" style="width: 36px; height: 36px; min-width: 36px; max-width: 36px; display: inline-flex; align-items: center; justify-content: center;">
+            <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style="width: 20px; height: 20px; max-width: 20px; display: block;">
               <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V17H19V19Z"/>
             </svg>
           </div>
@@ -470,7 +525,14 @@
     <i class="fa-solid fa-arrow-up"></i>
   </button>
 
-  <!-- ملف الجافاسكريبت الرئيسي -->
-  <script src="/zinger.king/js/app.js"></script>
+  <!-- ملف الجافاسكريبت الرئيسي (مسارات نسبية متوافقة 100% مع GitHub Pages وجميع المجلدات) -->
+  <script src="app.js"></script>
+  <script>
+    if (typeof menuData === 'undefined') {
+      var fallbackScript = document.createElement('script');
+      fallbackScript.src = 'js/app.js';
+      document.body.appendChild(fallbackScript);
+    }
+  </script>
 </body>
 </html>
