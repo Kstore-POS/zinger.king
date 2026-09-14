@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="قائمة طعام مطعم زنجر كينج (Zinger King) - أقوى ساندوتشات الزنجر، وجبات الدجاج المقرمش البروستد، والريزو مع خدمة التوصيل السريع">
+  <title>زنجر كينج | Zinger King - المنيو وقائمة الطعام</title>
+  
+  <!-- خطوط عربية حديثة من Google Fonts (Cairo & Tajawal) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- أيقونات FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- ملف التنسيقات الرئيسي -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- شريط الإعلان العلوي وحالة المطعم اللحظية -->
+  <div class="top-announcement">
+    <div class="container announcement-content">
+      <!-- يتم تحديث حالة المطعم تلقائياً بواسطة JavaScript بناءً على ساعات العمل -->
+      <div class="status-indicator" id="restaurantStatusIndicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">المطعم مفتوح الآن لاستقبال طلباتكم</span>
+      </div>
+      <div class="announcement-promo">
+        <i class="fa-solid fa-fire"></i>
+        <span>أقوى عروض القرمشة من <strong>زنجر كينج</strong> - اطلب الآن عبر واتساب!</span>
+      </div>
+      <div class="top-links">
+        <a href="https://wa.me/201030104997" target="_blank" class="top-link">
+          <i class="fa-brands fa-whatsapp text-whatsapp"></i> واتساب: <span dir="ltr">01030104997</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- الهيدر الرئيسي (Header) -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-container">
+      <!-- الشعار واسم المطعم (يدعم صورة لوجو خارجية مع بديل SVG متقن لزنجر كينج) -->
+      <a href="#" class="brand-logo" aria-label="الصفحة الرئيسية لمطعم زنجر كينج">
+        <div class="logo-icon-wrap" id="logoContainer">
+          <!-- شعار التاج والنار المخصص لـ زنجر كينج (Zinger King) -->
+          <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor">
+            <!-- تاج الملك مع شعلة القرمشة -->
+            <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V17H19V19Z"/>
+          </svg>
+        </div>
+        <div class="brand-details">
+          <h1 class="brand-name">زنجر كينج</h1>
+          <span class="brand-tagline">ZINGER KING • أصل القرمشة والزنجر</span>
+        </div>
+      </a>
+
+      <!-- أزرار العمل السريعة -->
+      <div class="header-actions">
+        <!-- رابط صفحة الفيسبوك الرسمية -->
+        <a href="https://www.facebook.com/share/1C2rnMrFho/" target="_blank" class="action-btn fb-header-btn" aria-label="صفحة الفيسبوك">
+          <i class="fa-brands fa-facebook-f"></i>
+          <span class="btn-text">فيسبوك</span>
+        </a>
+
+        <!-- زر التمرير إلى البحث -->
+        <button class="action-btn search-toggle-btn" id="searchFocusBtn" aria-label="بحث في الوجبات">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span class="btn-text">بحث</span>
+        </button>
+
+        <!-- زر الاتصال السريع (يفتح نافذة للأرقام الثلاثة) -->
+        <button class="action-btn call-btn" id="callPopupBtn" aria-label="أرقام الهاتف والاتصال">
+          <i class="fa-solid fa-phone"></i>
+          <span class="btn-text">اتصل بنا</span>
+        </button>
+
+        <!-- زر سلة الطلبات التفاعلية -->
+        <button class="cart-trigger-btn" id="cartTriggerBtn" aria-label="عرض سلة الطلبات">
+          <div class="cart-icon-wrapper">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span class="cart-count" id="cartCountBadge">0</span>
+          </div>
+          <span class="cart-total-preview" id="cartTotalPreview">0.00 ج.م</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- نافذة منبثقة لاختيار رقم الاتصال المباشر -->
+  <div class="modal-backdrop phone-modal" id="phoneModal" aria-hidden="true">
+    <div class="modal-dialog small-dialog">
+      <button class="modal-close-btn" id="phoneModalCloseBtn" aria-label="إغلاق">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="phone-modal-body">
+        <div class="phone-modal-header">
+          <div class="phone-icon-circle"><i class="fa-solid fa-phone-volume"></i></div>
+          <h3>اتصل بمطعم زنجر كينج</h3>
+          <p>يسعدنا استقبال اتصالاتكم وطلبات التوصيل عبر الأرقام التالية:</p>
+        </div>
+        <div class="phone-numbers-list">
+          <a href="tel:01122268081" class="phone-item-btn">
+            <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 1:</span>
+            <span class="phone-val" dir="ltr">01122268081</span>
+          </a>
+          <a href="tel:01122268180" class="phone-item-btn">
+            <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 2:</span>
+            <span class="phone-val" dir="ltr">01122268180</span>
+          </a>
+          <a href="tel:01122268070" class="phone-item-btn">
+            <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 3:</span>
+            <span class="phone-val" dir="ltr">01122268070</span>
+          </a>
+          <a href="https://wa.me/201030104997" target="_blank" class="phone-item-btn whatsapp-item">
+            <span class="phone-label"><i class="fa-brands fa-whatsapp"></i> طلبات واتساب:</span>
+            <span class="phone-val" dir="ltr">01030104997</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- القسم الترحيبي والبحث والفلترة السريعة (Hero & Quick Controls) -->
+  <section class="menu-hero-section">
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <i class="fa-solid fa-crown"></i> ملوك الزنجر والقرمشة الذهبية
+      </div>
+      <h2 class="hero-title">منيو مطعم زنجر كينج</h2>
+      <p class="hero-description">
+        استمتع بأشهى ساندوتشات الزنجر الكرانشي، قطع الفرايد تشيكن المقرمشة بالتتبيلة الملكية السرية، وأطباق الريزو والبطاطس بالجبنة.
+      </p>
+
+      <!-- شريط البحث الفوري -->
+      <div class="search-bar-wrapper">
+        <div class="search-input-group">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="text" 
+            id="menuSearchInput" 
+            class="menu-search-input" 
+            placeholder="ابحث عن وجبتك (زنجر، سوبر، ريزو، استربس، حار...)" 
+            autocomplete="off"
+          >
+          <button class="clear-search-btn" id="clearSearchBtn" aria-label="مسح البحث" style="display: none;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- فلاتر التخصيص السريعة (Dietary & Highlights) -->
+      <div class="quick-filters-row">
+        <span class="filters-label"><i class="fa-solid fa-filter"></i> فلاتر سريعة:</span>
+        <button class="diet-filter-pill active" data-filter="all">الكل</button>
+        <button class="diet-filter-pill" data-filter="bestseller"><i class="fa-solid fa-star"></i> الأكثر طلباً ⭐</button>
+        <button class="diet-filter-pill" data-filter="spicy"><i class="fa-solid fa-pepper-hot"></i> حار نار 🌶️</button>
+        <button class="diet-filter-pill" data-filter="family"><i class="fa-solid fa-users"></i> عروض عائلية 👨‍👩‍👧‍👦</button>
+        <button class="diet-filter-pill" data-filter="new"><i class="fa-solid fa-sparkles"></i> جديد كينج ✨</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- شريط تصنيفات الأطعمة التفاعلي (Sticky Category Navigation) -->
+  <nav class="categories-nav-sticky" id="categoriesNav">
+    <div class="container categories-container">
+      <div class="categories-scroll-track" id="categoriesTrack">
+        <!-- أزرار تصنيفات زنجر كينج -->
+        <button class="category-tab active" data-category="all">
+          <span class="tab-icon"><i class="fa-solid fa-utensils"></i></span>
+          <span class="tab-title">جميع الأصناف</span>
+          <span class="tab-count" id="count-all">0</span>
+        </button>
+        <button class="category-tab" data-category="zinger">
+          <span class="tab-icon"><i class="fa-solid fa-burger"></i></span>
+          <span class="tab-title">ساندوتشات الزنجر</span>
+          <span class="tab-count" id="count-zinger">0</span>
+        </button>
+        <button class="category-tab" data-category="meals">
+          <span class="tab-icon"><i class="fa-solid fa-drumstick-bite"></i></span>
+          <span class="tab-title">وجبات الفرايد تشيكن</span>
+          <span class="tab-count" id="count-meals">0</span>
+        </button>
+        <button class="category-tab" data-category="appetizers">
+          <span class="tab-icon"><i class="fa-solid fa-bowl-food"></i></span>
+          <span class="tab-title">الريزو والمقبلات والبطاطس</span>
+          <span class="tab-count" id="count-appetizers">0</span>
+        </button>
+        <button class="category-tab" data-category="drinks">
+          <span class="tab-icon"><i class="fa-solid fa-glass-water"></i></span>
+          <span class="tab-title">المشروبات والصودا</span>
+          <span class="tab-count" id="count-drinks">0</span>
+        </button>
+        <button class="category-tab" data-category="desserts">
+          <span class="tab-icon"><i class="fa-solid fa-ice-cream"></i></span>
+          <span class="tab-title">الحلويات</span>
+          <span class="tab-count" id="count-desserts">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- المنطقة الرئيسية لعرض شبكة المنتجات (Products Section) -->
+  <main class="menu-main-content">
+    <div class="container">
+      <!-- شريط معلومات نتائج التصفية -->
+      <div class="results-header">
+        <div class="active-category-info">
+          <h3 class="current-section-title" id="currentSectionTitle">جميع الأصناف</h3>
+          <span class="results-badge" id="resultsCountBadge">عرض 0 أصناف</span>
+        </div>
+        <div class="sort-selector-wrapper">
+          <label for="priceSortSelect" class="sort-label"><i class="fa-solid fa-arrow-down-wide-short"></i> الترتيب:</label>
+          <select id="priceSortSelect" class="price-sort-select">
+            <option value="default">المقترح الملكي</option>
+            <option value="price-asc">السعر: من الأقل للأعلى</option>
+            <option value="price-desc">السعر: من الأعلى للأقل</option>
+            <option value="name">الاسم أبجدياً</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- شبكة بطاقات المنتجات (Products Grid) -->
+      <div class="products-grid" id="productsGrid">
+        <!-- يتم ملء البطاقات ديناميكياً بواسطة JavaScript -->
+      </div>
+
+      <!-- رسالة عند عدم العثور على نتائج بحث -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h4>عذراً، لم نجد أي صنف يطابق بحثك!</h4>
+        <p>جرّب البحث باسم وجبة أخرى أو أعد ضبط الفلاتر لتصفح كامل المنيو.</p>
+        <button class="reset-search-btn" id="resetSearchBtn">إعادة ضبط التصفية</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- نافذة المعاينة السريعة للمنتج (Quick View Modal) -->
+  <div class="modal-backdrop" id="quickViewModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" id="modalCloseBtn" aria-label="إغلاق النافذة">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="modal-content-body" id="modalContentBody">
+        <!-- يتم حقن التفاصيل هنا برمجياً -->
+      </div>
+    </div>
+  </div>
+
+  <!-- الدرج الجانبي لسلة الطلبات (Cart Drawer) -->
+  <div class="cart-drawer-backdrop" id="cartDrawerBackdrop"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="سلة المشتريات">
+    <div class="cart-drawer-header">
+      <div class="cart-drawer-title">
+        <i class="fa-solid fa-bag-shopping text-accent"></i>
+        <span>سلة طلباتك - زنجر كينج</span>
+        <span class="cart-items-counter" id="drawerItemsCount">(0)</span>
+      </div>
+      <button class="cart-close-btn" id="cartCloseBtn" aria-label="إغلاق السلة">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- قائمة عناصر السلة -->
+    <div class="cart-items-list" id="cartItemsList">
+      <!-- يتم حقن الأصناف المضافة هنا -->
+    </div>
+
+    <!-- تذييل السلة ونموذج تفاصيل الطلب والدفع والمجموع -->
+    <div class="cart-drawer-footer" id="cartDrawerFooter">
+      
+      <!-- قسم تفاصيل استلام الطلب والدفع المخصص لرسالة واتساب -->
+      <div class="cart-checkout-form" id="cartCheckoutForm">
+        <h5 class="checkout-form-title">
+          <i class="fa-solid fa-clipboard-list text-accent"></i> تفاصيل استلام الطلب والدفع
+        </h5>
+
+        <!-- 1. تحديد نوع الطلب: دليفري أو استلام من المطعم -->
+        <div class="form-field-block">
+          <label class="form-field-label">نوع الطلب:</label>
+          <div class="order-type-toggle" id="orderTypeToggle">
+            <button type="button" class="order-type-btn active" data-type="delivery">
+              <i class="fa-solid fa-motorcycle"></i> دليفري (توصيل)
+            </button>
+            <button type="button" class="order-type-btn" data-type="pickup">
+              <i class="fa-solid fa-shop"></i> استلام من المطعم
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. في حال اختيار دليفري: ظهور خانة كتابة العنوان بالتفصيل -->
+        <div class="form-field-block" id="deliveryAddressBlock">
+          <label for="orderAddressInput" class="form-field-label">
+            <i class="fa-solid fa-location-dot text-accent"></i> عنوان التوصيل بالتفصيل <span class="required-star">*</span>:
+          </label>
+          <textarea 
+            id="orderAddressInput" 
+            class="order-form-input textarea-address" 
+            rows="2" 
+            placeholder="اكتب المنطقة، اسم الشارع، رقم العمارة، رقم الشقة، علامة مميزة..."
+          ></textarea>
+        </div>
+
+        <!-- 3. في حال اختيار استلام من المطعم: ظهور خانة ميعاد استلام الطلب -->
+        <div class="form-field-block" id="pickupTimeBlock" style="display: none;">
+          <label for="orderPickupTimeInput" class="form-field-label">
+            <i class="fa-regular fa-clock text-accent"></i> ميعاد استلام الطلب من المطعم <span class="required-star">*</span>:
+          </label>
+          <div class="quick-pickup-times" id="quickPickupTimes">
+            <button type="button" class="pickup-chip active" data-time="خلال 20-30 دقيقة">خلال 20-30 دقيقة</button>
+            <button type="button" class="pickup-chip" data-time="خلال 45 دقيقة">خلال 45 دقيقة</button>
+            <button type="button" class="pickup-chip" data-time="خلال ساعة">خلال ساعة</button>
+          </div>
+          <input 
+            type="text" 
+            id="orderPickupTimeInput" 
+            class="order-form-input mt-1" 
+            placeholder="أو اكتب وقتاً محدداً (مثلاً: الساعة 8:30 مساءً)" 
+            value="خلال 20-30 دقيقة"
+          >
+        </div>
+
+        <!-- 4. تحديد طريقة الدفع: كاش، فودافون كاش، انستا باي -->
+        <div class="form-field-block">
+          <label class="form-field-label">طريقة الدفع:</label>
+          <div class="payment-method-toggle" id="paymentMethodToggle">
+            <button type="button" class="payment-method-btn active" data-payment="نقداً عند الاستلام">
+              <i class="fa-solid fa-money-bill-wave"></i> كاش
+            </button>
+            <button type="button" class="payment-method-btn" data-payment="فودافون كاش">
+              <i class="fa-solid fa-mobile-screen-button"></i> فودافون كاش
+            </button>
+            <button type="button" class="payment-method-btn" data-payment="انستا باي">
+              <i class="fa-solid fa-bolt"></i> انستا باي
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. اسم العميل (اختياري) -->
+        <div class="form-field-block">
+          <label for="orderCustomerNameInput" class="form-field-label">اسم العميل (اختياري):</label>
+          <input 
+            type="text" 
+            id="orderCustomerNameInput" 
+            class="order-form-input" 
+            placeholder="اكتب اسمك لتسجيل الطلب باسمك"
+          >
+        </div>
+      </div>
+
+      <!-- ملخص السعر والمجموع -->
+      <div class="cart-summary-row">
+        <span>المجموع الفرعي:</span>
+        <span class="summary-val" id="drawerSubtotal">0.00 ج.م</span>
+      </div>
+      <div class="cart-total-row">
+        <span class="total-label">المبلغ الإجمالي:</span>
+        <span class="total-amount" id="drawerGrandTotal">0.00 ج.م</span>
+      </div>
+
+      <div class="cart-actions-group">
+        <button class="checkout-whatsapp-btn" id="checkoutWhatsappBtn">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>إرسال الطلب عبر واتساب (01030104997)</span>
+        </button>
+        <button class="clear-cart-btn" id="clearCartBtn">
+          <i class="fa-solid fa-trash-can"></i> إفراغ السلة
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- رسالة التنبيه العائمة (Toast Notification) -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- تذييل الصفحة (Footer) -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <!-- نبذة عن زنجر كينج -->
+      <div class="footer-col brand-col">
+        <div class="footer-logo">
+          <div class="logo-icon-wrap small">
+            <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V17H19V19Z"/>
+            </svg>
+          </div>
+          <h4>زنجر كينج (Zinger King)</h4>
+        </div>
+        <p class="footer-about-text">
+          مطعم زنجر كينج - روّاد القرمشة الذهبية وساندوتشات الزنجر الحارة والباردة، نقدم لكم يومياً دجاج طازج بأعلى معايير الجودة وتتبيلات ملوكية خاصة.
+        </p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/share/1C2rnMrFho/" target="_blank" class="social-btn fb-social-btn" aria-label="فيسبوك زنجر كينج">
+            <i class="fa-brands fa-facebook-f"></i>
+          </a>
+          <a href="https://wa.me/201030104997" target="_blank" class="social-btn wa-social-btn" aria-label="واتساب زنجر كينج">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- أوقات العمل وحالة المطعم -->
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fa-regular fa-clock text-accent"></i> ساعات العمل الرسمية</h4>
+        <ul class="footer-info-list">
+          <li><strong>جميع أيام الأسبوع:</strong> من 11:00 صباحاً حتى 3:00 مساءً / ليلاً</li>
+          <li><strong>حالة المطعم:</strong> <span class="footer-status-pill" id="footerStatusText">مفتوح الآن 🟢</span></li>
+          <li class="delivery-note"><i class="fa-solid fa-motorcycle text-accent"></i> خدمة الدليفري والتوصيل السريع متاحة طوال ساعات العمل!</li>
+        </ul>
+      </div>
+
+      <!-- أرقام الاتصال والواتساب -->
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fa-solid fa-phone-volume text-accent"></i> أرقام الهاتف والتوصيل</h4>
+        <ul class="footer-info-list phone-links-footer">
+          <li>
+            <i class="fa-brands fa-whatsapp text-whatsapp"></i> واتساب الطلبات: 
+            <a href="https://wa.me/201030104997" target="_blank" dir="ltr" class="highlight-contact">01030104997</a>
+          </li>
+          <li>
+            <i class="fa-solid fa-phone"></i> الخط الساخن 1: 
+            <a href="tel:01122268081" dir="ltr">01122268081</a>
+          </li>
+          <li>
+            <i class="fa-solid fa-phone"></i> الخط الساخن 2: 
+            <a href="tel:01122268180" dir="ltr">01122268180</a>
+          </li>
+          <li>
+            <i class="fa-solid fa-phone"></i> الخط الساخن 3: 
+            <a href="tel:01122268070" dir="ltr">01122268070</a>
+          </li>
+          <li>
+            <i class="fa-brands fa-facebook text-fb"></i> فيسبوك: 
+            <a href="https://www.facebook.com/share/1C2rnMrFho/" target="_blank">صفحة زنجر كينج الرسمية</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- وسائل الدفع المعتمدة لمطعم زنجر كينج -->
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fa-solid fa-wallet text-accent"></i> طرق الدفع المتاحة</h4>
+        <p class="payment-desc">نقدم لكم خيارات دفع سريعة وآمنة عند الاستلام أو عبر المحافظ الإلكترونية:</p>
+        <div class="payment-methods-icons">
+          <span class="pay-badge instapay-badge">
+            <i class="fa-solid fa-bolt"></i> انستا باي (InstaPay)
+          </span>
+          <span class="pay-badge vodafone-badge">
+            <i class="fa-solid fa-mobile-screen-button"></i> فودافون كاش
+          </span>
+          <span class="pay-badge cash-badge">
+            <i class="fa-solid fa-money-bill-wave"></i> نقداً عند الاستلام
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- الشريط السفلي للحقوق -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>© 2026 مطعم زنجر كينج (Zinger King). جميع الحقوق محفوظة.</p>
+        <p class="credits">صُممت القائمة بتجربة مستخدم عصرية وسريعة بالجنيه المصري ⚡</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- زر الصعود للأعلى السلس -->
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="الصعود لأعلى الصفحة">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <!-- ملف الجافاسكريبت الرئيسي -->
+  <script src="js/app.js"></script>
+</body>
+</html>
