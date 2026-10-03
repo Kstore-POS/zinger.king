@@ -265,6 +265,46 @@ const menuData = [
   }
 ];
 
+// تعريف الفئات الرسمية مع الصور والترتيب المعتمد لمطعم زنجر كينج
+const CATEGORIES = [
+  {
+    id: "all",
+    name: "جميع الأصناف",
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=200&q=80",
+    icon: "fa-solid fa-layer-group"
+  },
+  {
+    id: "zinger",
+    name: "ساندوتشات الزنجر",
+    image: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=200&q=80",
+    icon: "fa-solid fa-burger"
+  },
+  {
+    id: "meals",
+    name: "وجبات الفرايد تشيكن",
+    image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=200&q=80",
+    icon: "fa-solid fa-drumstick-bite"
+  },
+  {
+    id: "appetizers",
+    name: "الريزو والمقبلات",
+    image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=200&q=80",
+    icon: "fa-solid fa-bowl-food"
+  },
+  {
+    id: "drinks",
+    name: "المشروبات والصودا",
+    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80",
+    icon: "fa-solid fa-glass-water"
+  },
+  {
+    id: "desserts",
+    name: "الحلويات",
+    image: "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?auto=format&fit=crop&w=200&q=80",
+    icon: "fa-solid fa-ice-cream"
+  }
+];
+
 // حالة التطبيق (Application State)
 const state = {
   currentCategory: "all",
@@ -300,6 +340,7 @@ const DOM = {
   
   // عناصر سلة الطلبات
   cartTriggerBtn: document.getElementById("cartTriggerBtn"),
+  floatingCartBtn: document.getElementById("floatingCartBtn"),
   cartDrawer: document.getElementById("cartDrawer"),
   cartDrawerBackdrop: document.getElementById("cartDrawerBackdrop"),
   cartCloseBtn: document.getElementById("cartCloseBtn"),
@@ -472,90 +513,150 @@ function getFilteredAndSortedProducts() {
   return list;
 }
 
-// رسم بطاقات المنتجات
+// رسم بطاقات الأصناف وتجميع الفئات
 function renderProducts() {
-  const products = getFilteredAndSortedProducts();
+  const allFiltered = getFilteredAndSortedProducts();
   DOM.productsGrid.innerHTML = "";
 
-  DOM.resultsCountBadge.textContent = `عرض ${products.length} صنف`;
-  DOM.currentSectionTitle.textContent = categoryNames[state.currentCategory] || "جميع الأصناف";
-
-  if (products.length === 0) {
+  if (allFiltered.length === 0) {
     DOM.emptyState.style.display = "block";
+    DOM.resultsCountBadge.textContent = "0 صنف";
     return;
   } else {
     DOM.emptyState.style.display = "none";
+    DOM.resultsCountBadge.textContent = `${allFiltered.length} صنف`;
   }
 
   const fragment = document.createDocumentFragment();
 
-  products.forEach(item => {
-    const card = document.createElement("article");
-    card.className = "product-card";
-    card.setAttribute("data-id", item.id);
+  // فحص حالة العرض: إذا كانت الفئة الحالية هي "all" يتم عرض جميع الفئات مجمعة
+  if (state.currentCategory === "all") {
+    // جميع الفئات ما عدا "all"
+    const subCategories = CATEGORIES.filter(c => c.id !== "all");
 
-    // تجهيز شارات الحالة
-    let badgesHtml = "";
-    if (item.tags.includes("bestseller")) {
-      badgesHtml += `<span class="badge-tag bestseller"><i class="fa-solid fa-star"></i> الأكثر طلباً</span>`;
-    }
-    if (item.tags.includes("spicy")) {
-      badgesHtml += `<span class="badge-tag spicy"><i class="fa-solid fa-pepper-hot"></i> حار نار</span>`;
-    }
-    if (item.tags.includes("family")) {
-      badgesHtml += `<span class="badge-tag family"><i class="fa-solid fa-users"></i> عائلي</span>`;
-    }
-    if (item.tags.includes("new")) {
-      badgesHtml += `<span class="badge-tag new"><i class="fa-solid fa-sparkles"></i> جديد كينج</span>`;
-    }
+    subCategories.forEach(cat => {
+      const catProducts = allFiltered.filter(p => p.category === cat.id);
+      if (catProducts.length > 0) {
+        // إنشاء حاوية قسم الفئة
+        const section = document.createElement("section");
+        section.className = "category-group-section";
+        section.id = `cat-section-${cat.id}`;
 
-    card.innerHTML = `
-      <div class="card-media-wrapper" onclick="openQuickView('${item.id}')">
-        <img 
-          src="${item.image}" 
-          alt="${item.name}" 
-          class="card-img" 
-          loading="lazy" 
-          onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'300\\' viewBox=\\'0 0 400 300\\'><rect fill=\\'%231a1a24\\' width=\\'400\\' height=\\'300\\'/><text fill=\\'%23ff5722\\' font-size=\\'22\\' font-family=\\'sans-serif\\' x=\\'50%\\' y=\\'50%\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\'>👑 ${encodeURIComponent(item.name)}</text></svg>';"
-        >
-        <div class="card-badges">${badgesHtml}</div>
-        <button class="quick-view-overlay-btn" aria-label="عرض تفاصيل الوجبة">
-          <i class="fa-solid fa-eye"></i> تفاصيل سريعة
-        </button>
-      </div>
-      
-      <div class="card-content">
-        <div class="card-title-row">
-          <h4 class="meal-name">${item.name}</h4>
-          <span class="meal-en-name">${item.nameEn}</span>
-        </div>
-        
-        <p class="meal-description">${item.description}</p>
-        
-        <div class="card-meta-info">
-          <span class="meta-item"><i class="fa-solid fa-fire text-accent"></i> ${item.calories} سعرة</span>
-          <span class="meta-item"><i class="fa-regular fa-clock text-accent"></i> ${item.prepTime}</span>
-        </div>
-
-        <div class="card-footer">
-          <div class="price-wrapper">
-            <span class="price-label">السعر</span>
-            <div class="price-value">
-              ${item.price.toFixed(2)} <span class="currency">ج.م</span>
-            </div>
+        // مستطيل رأس الفئة المميز والمختلف عن كارت الصنف
+        const banner = document.createElement("div");
+        banner.className = "category-section-banner";
+        banner.innerHTML = `
+          <div class="cat-banner-info">
+            <img src="${cat.image}" alt="${cat.name}" class="cat-banner-img" loading="lazy">
+            <h3 class="cat-banner-title">${cat.name}</h3>
           </div>
-          <button class="add-to-cart-btn" onclick="addToCart('${item.id}', event)">
-            <i class="fa-solid fa-plus"></i>
-            <span>أضف للطلب</span>
-          </button>
-        </div>
-      </div>
-    `;
+          <span class="cat-banner-count">${catProducts.length} ${catProducts.length === 1 ? 'صنف' : 'أصناف'}</span>
+        `;
+        section.appendChild(banner);
 
-    fragment.appendChild(card);
-  });
+        // قائمة الأصناف المستطيلة التابعة لهذه الفئة
+        const list = document.createElement("div");
+        list.className = "category-products-list";
+        catProducts.forEach(item => {
+          list.appendChild(createProductCard(item));
+        });
+        section.appendChild(list);
+
+        fragment.appendChild(section);
+      }
+    });
+  } else {
+    // إذا تم اختيار فئة محددة فقط: يظهر رأس هذه الفئة وتحته أصنافها فقط
+    const cat = CATEGORIES.find(c => c.id === state.currentCategory) || {
+      id: state.currentCategory,
+      name: categoryNames[state.currentCategory] || "أصناف مختارة",
+      image: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=200&q=80"
+    };
+
+    const section = document.createElement("section");
+    section.className = "category-group-section";
+
+    const banner = document.createElement("div");
+    banner.className = "category-section-banner";
+    banner.innerHTML = `
+      <div class="cat-banner-info">
+        <img src="${cat.image}" alt="${cat.name}" class="cat-banner-img" loading="lazy">
+        <h3 class="cat-banner-title">${cat.name}</h3>
+      </div>
+      <span class="cat-banner-count">${allFiltered.length} ${allFiltered.length === 1 ? 'صنف' : 'أصناف'}</span>
+    `;
+    section.appendChild(banner);
+
+    const list = document.createElement("div");
+    list.className = "category-products-list";
+    allFiltered.forEach(item => {
+      list.appendChild(createProductCard(item));
+    });
+    section.appendChild(list);
+
+    fragment.appendChild(section);
+  }
 
   DOM.productsGrid.appendChild(fragment);
+}
+
+// دالة إنشاء بطاقة الصنف المستطيلة المخصصة للموبايل
+function createProductCard(item) {
+  const card = document.createElement("article");
+  card.className = "product-card-rect";
+  card.setAttribute("data-id", item.id);
+
+  let badgesHtml = "";
+  if (item.tags.includes("bestseller")) {
+    badgesHtml += `<span class="badge-tag bestseller"><i class="fa-solid fa-star"></i> الأكثر طلباً</span>`;
+  }
+  if (item.tags.includes("spicy")) {
+    badgesHtml += `<span class="badge-tag spicy"><i class="fa-solid fa-pepper-hot"></i> حار</span>`;
+  }
+  if (item.tags.includes("family")) {
+    badgesHtml += `<span class="badge-tag family"><i class="fa-solid fa-users"></i> عائلي</span>`;
+  }
+  if (item.tags.includes("new")) {
+    badgesHtml += `<span class="badge-tag new"><i class="fa-solid fa-sparkles"></i> جديد</span>`;
+  }
+
+  card.innerHTML = `
+    <!-- الجانب الأيمن: الاسم والسعر والوصف وزر الإضافة -->
+    <div class="card-rect-content" onclick="openQuickView('${item.id}')">
+      <div class="card-rect-header">
+        <h4 class="card-rect-title">${item.name}</h4>
+        ${badgesHtml ? `<div class="card-rect-badges">${badgesHtml}</div>` : ''}
+      </div>
+      
+      <p class="card-rect-desc">${item.description}</p>
+      
+      <div class="card-rect-footer">
+        <div class="card-rect-price">
+          <span class="price-val">${item.price.toFixed(0)}</span>
+          <span class="price-cur">ج.م</span>
+        </div>
+        
+        <button class="card-rect-add-btn" onclick="event.stopPropagation(); addToCart('${item.id}', event);" aria-label="إضافة ${item.name} للطلب">
+          <i class="fa-solid fa-plus"></i>
+          <span>إضافة للطلب</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- الجانب الأيسر: صورة الصنف شهية ومربعة -->
+    <div class="card-rect-media" onclick="openQuickView('${item.id}')">
+      <img 
+        src="${item.image}" 
+        alt="${item.name}" 
+        class="card-rect-img" 
+        loading="lazy" 
+        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'200\\' viewBox=\\'0 0 200 200\\'><rect fill=\\'%231f1f2a\\' width=\\'200\\' height=\\'200\\'/><text fill=\\'%23ff5722\\' font-size=\\'16\\' font-family=\\'sans-serif\\' x=\\'50%\\' y=\\'50%\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\'>👑 ${encodeURIComponent(item.name)}</text></svg>';"
+      >
+      <span class="card-rect-expand"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+    </div>
+  `;
+
+  return card;
 }
 
 // ==========================================================================
@@ -579,6 +680,12 @@ function addToCart(productId, event) {
 
   saveCartToStorage();
   updateCartUI();
+
+  if (DOM.floatingCartBtn) {
+    DOM.floatingCartBtn.classList.add("cart-bump");
+    setTimeout(() => DOM.floatingCartBtn.classList.remove("cart-bump"), 350);
+  }
+
   showToast(`تمت إضافة "${item.name}" إلى سلة طلباتك 🛍️`);
 }
 
@@ -940,7 +1047,8 @@ function setupEventListeners() {
   });
 
   // 6. أحداث سلة الطلبات
-  DOM.cartTriggerBtn.addEventListener("click", () => toggleCartDrawer(true));
+  if (DOM.cartTriggerBtn) DOM.cartTriggerBtn.addEventListener("click", () => toggleCartDrawer(true));
+  if (DOM.floatingCartBtn) DOM.floatingCartBtn.addEventListener("click", () => toggleCartDrawer(true));
   DOM.cartCloseBtn.addEventListener("click", () => toggleCartDrawer(false));
   DOM.cartDrawerBackdrop.addEventListener("click", () => toggleCartDrawer(false));
   DOM.clearCartBtn.addEventListener("click", clearCart);

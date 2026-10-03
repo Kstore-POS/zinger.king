@@ -70,13 +70,128 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--bg-body);
+  background-color: var(--bg-darkest);
   color: var(--text-primary);
   line-height: 1.6;
   direction: rtl;
   text-align: right;
   overflow-x: hidden;
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* غلاف تطبيق الموبايل الحصري */
+.mobile-app-shell {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--bg-body);
+  min-height: 100vh;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 480px) {
+  .mobile-app-shell {
+    max-width: 100%;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* زر السلة العائم الدائم المثبت في أعلى يسار الشاشة */
+.floating-top-cart-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--grad-primary);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px 6px 10px;
+  box-shadow: 0 6px 20px rgba(255, 87, 34, 0.45), 0 2px 10px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+}
+
+.floating-top-cart-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 25px rgba(255, 87, 34, 0.6);
+}
+
+.floating-top-cart-btn:active {
+  transform: scale(0.95);
+}
+
+.floating-top-cart-btn.cart-bump {
+  animation: cart-bump-anim 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes cart-bump-anim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.floating-cart-icon-box {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.floating-cart-icon-box .cart-count {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: #ffffff;
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 0.72rem;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.floating-cart-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+.floating-cart-label {
+  font-size: 0.65rem;
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+.floating-top-cart-btn .cart-total-preview {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
 }
 
 a {
@@ -469,162 +584,220 @@ img {
   border-color: #25d366;
 }
 
-/* قسم الترويسة والبحث (Hero) */
-.menu-hero-section {
-  background: var(--bg-body);
-  background-image: var(--grad-hero);
-  padding: 3rem 0 2rem;
-  text-align: center;
+/* ==========================================================================
+   هيدر الموبايل الملكي الاحترافي (Mobile Brand Hero)
+   ========================================================================== */
+.mobile-brand-hero {
   position: relative;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(255, 87, 34, 0.12);
-  border: 1px solid rgba(255, 87, 34, 0.3);
-  color: var(--primary);
-  padding: 0.4rem 1rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.85rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.hero-title {
-  font-family: var(--font-heading);
-  font-size: 2.3rem;
-  font-weight: 900;
-  color: var(--text-white);
-  margin-bottom: 0.6rem;
-  line-height: 1.2;
-}
-
-.hero-description {
-  max-width: 620px;
-  margin: 0 auto 2rem;
-  color: var(--text-secondary);
-  font-size: 1.05rem;
-}
-
-/* شريط البحث الفوري */
-.search-bar-wrapper {
-  max-width: 580px;
-  margin: 0 auto 1.5rem;
-}
-
-.search-input-group {
-  position: relative;
+  padding: 1.5rem 1.25rem 1.15rem;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 87, 34, 0.25) 0%, rgba(15, 15, 20, 0.95) 75%);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  overflow: hidden;
 }
 
-.search-icon {
+.brand-hero-glow {
   position: absolute;
-  right: 1.25rem;
-  color: var(--text-muted);
-  font-size: 1.1rem;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(255, 87, 34, 0.4) 0%, transparent 70%);
+  filter: blur(25px);
   pointer-events: none;
 }
 
-.menu-search-input {
-  width: 100%;
-  padding: 0.95rem 3.2rem 0.95rem 3rem;
-  background: var(--bg-surface);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  color: var(--text-white);
-  font-family: inherit;
-  font-size: 0.95rem;
-  box-shadow: var(--shadow-md);
-  transition: var(--transition);
+.brand-hero-header-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  position: relative;
+  z-index: 2;
 }
 
-.menu-search-input:focus {
-  border-color: var(--primary);
-  background: var(--bg-card);
-  box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.15);
-}
-
-.clear-search-btn {
-  position: absolute;
-  left: 1.1rem;
-  color: var(--text-muted);
-  font-size: 1rem;
-  padding: 0.3rem;
-  border-radius: 50%;
+.brand-hero-badge {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  border-radius: 20px;
+  background: var(--grad-primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(255, 87, 34, 0.45);
+  transform: rotate(-3deg);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.clear-search-btn:hover {
+.brand-hero-badge:hover {
+  transform: rotate(0deg) scale(1.06);
+}
+
+.brand-hero-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brand-hero-name {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 900;
   color: var(--text-white);
-  background: rgba(255, 255, 255, 0.1);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.2rem;
 }
 
-/* فلاتر التخصيص السريعة (Dietary Filters) */
-.quick-filters-row {
+.brand-hero-tagline {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.5px;
+}
+
+.brand-hero-status-row {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
 }
 
-.filters-label {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  margin-left: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.diet-filter-pill {
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 600;
+.working-hours-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
-.diet-filter-pill:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-white);
+.brand-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
 
-.diet-filter-pill.active {
-  background: rgba(255, 87, 34, 0.15);
-  border-color: var(--primary);
+.hero-action-pill {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  transition: var(--transition);
+}
+
+.hero-action-pill.call-pill {
+  background: rgba(255, 87, 34, 0.12);
+  border-color: rgba(255, 87, 34, 0.3);
   color: var(--primary);
 }
 
-/* شريط تصنيفات الأطعمة التفاعلي (Sticky Category Navigation) */
+.hero-action-pill.call-pill:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.hero-action-pill.wa-pill {
+  background: rgba(37, 211, 102, 0.1);
+  border-color: rgba(37, 211, 102, 0.3);
+  color: #25d366;
+}
+
+.hero-action-pill.wa-pill:hover {
+  background: #25d366;
+  color: #fff;
+}
+
+.hero-action-pill.fb-pill {
+  background: rgba(24, 119, 242, 0.1);
+  border-color: rgba(24, 119, 242, 0.3);
+  color: #1877f2;
+}
+
+.hero-action-pill.fb-pill:hover {
+  background: #1877f2;
+  color: #fff;
+}
+
+/* ==========================================================================
+   قسم البحث السريع والفلاتر للموبايل
+   ========================================================================== */
+.mobile-search-section {
+  padding: 1rem 1rem 0.75rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mobile-search-section .search-input-group {
+  margin-bottom: 0.75rem;
+}
+
+.mobile-search-section .quick-filters-row {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.4rem;
+  padding-bottom: 0.2rem;
+  scrollbar-width: none;
+}
+
+.mobile-search-section .quick-filters-row::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-search-section .diet-filter-pill {
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+}
+
+/* ==========================================================================
+   شريط صور الفئات التفاعلي بالترتيب
+   ========================================================================== */
 .categories-nav-sticky {
   position: sticky;
-  top: 65px;
-  z-index: 80;
-  background: var(--bg-body);
-  border-top: 1px solid var(--border-subtle);
+  top: 0;
+  z-index: 85;
+  background: rgba(15, 15, 20, 0.96);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 0.6rem 0;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 0.65rem 0.5rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .categories-scroll-track {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.55rem;
   overflow-x: auto;
-  padding: 0.2rem 0.25rem;
+  padding: 0.15rem 0.25rem;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
@@ -638,16 +811,25 @@ img {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1.1rem;
+  padding: 0.45rem 0.85rem 0.45rem 0.6rem;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   color: var(--text-secondary);
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 0.85rem;
   white-space: nowrap;
   flex-shrink: 0;
   transition: var(--transition);
+}
+
+.cat-tab-thumb {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 }
 
 .category-tab:hover {
@@ -663,19 +845,18 @@ img {
   box-shadow: var(--shadow-glow);
 }
 
-.tab-icon {
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
+.category-tab.active .cat-tab-thumb {
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
-.category-tab.active .tab-icon {
-  color: #fff;
+.category-tab .tab-title {
+  font-size: 0.85rem;
 }
 
-.tab-count {
-  font-size: 0.75rem;
-  padding: 0.15rem 0.45rem;
+.category-tab .tab-count {
+  font-size: 0.72rem;
+  padding: 0.12rem 0.45rem;
   border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.1);
 }
@@ -752,14 +933,225 @@ img {
   border-color: var(--primary);
 }
 
-/* شبكة بطاقات المنتجات (Products Grid) */
+/* شبكة بطاقات المنتجات وقوائم الفئات للموبايل */
 .products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
 }
 
-/* بطاقة الصنف (Food Card) */
+/* قسم الفئة والمستطيل المميز للرأس */
+.category-group-section {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.category-section-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #222232 0%, #161622 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 4px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.cat-banner-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.cat-banner-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--primary);
+  flex-shrink: 0;
+}
+
+.cat-banner-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-white);
+  letter-spacing: -0.2px;
+}
+
+.cat-banner-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 87, 34, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(255, 87, 34, 0.3);
+}
+
+.category-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* ==========================================================================
+   بطاقة الصنف المستطيلة للموبايل (Rectangular Product Card)
+   ========================================================================== */
+.product-card-rect {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.85rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+}
+
+.product-card-rect:hover {
+  border-color: rgba(255, 87, 34, 0.4);
+  box-shadow: var(--shadow-md);
+}
+
+.card-rect-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.card-rect-header {
+  margin-bottom: 0.25rem;
+}
+
+.card-rect-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-white);
+  line-height: 1.25;
+  margin-bottom: 0.25rem;
+}
+
+.card-rect-badges {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.card-rect-badges .badge-tag {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+}
+
+.card-rect-desc {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-rect-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.card-rect-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+.card-rect-price .price-val {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.card-rect-price .price-cur {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.card-rect-add-btn {
+  background: var(--grad-primary);
+  color: #ffffff;
+  border-radius: var(--radius-pill);
+  padding: 0.42rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 3px 10px rgba(255, 87, 34, 0.35);
+  transition: var(--transition);
+}
+
+.card-rect-add-btn:active {
+  transform: scale(0.95);
+}
+
+.card-rect-media {
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #14141c;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.card-rect-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-card-rect:hover .card-rect-img {
+  transform: scale(1.06);
+}
+
+.card-rect-expand {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  opacity: 0.85;
+}
+
+/* بطاقة الصنف الكلاسيكية */
 .product-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);

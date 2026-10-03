@@ -16,13 +16,19 @@
   
   <!-- تنسيقات حماية مدمجة (تضمن ظهور الموقع والشعار والألوان بسلاسة وفورية) -->
   <style>
-    /* أبعاد وتنسيقات الشعار الملكي لمنع تمدد الـ SVG في أي ظرف */
+    /* أبعاد وتنسيقات الشعار الملكي */
     .flame-svg, svg.flame-svg {
       width: 28px !important;
       height: 28px !important;
       max-width: 28px !important;
       max-height: 28px !important;
       display: block;
+    }
+    .brand-hero-badge .flame-svg {
+      width: 36px !important;
+      height: 36px !important;
+      max-width: 36px !important;
+      max-height: 36px !important;
     }
     .logo-icon-wrap {
       width: 48px !important;
@@ -32,9 +38,23 @@
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      border-radius: 12px;
+      border-radius: 14px;
       background: linear-gradient(135deg, #ff5722, #ff8a00);
       color: #ffffff;
+      flex-shrink: 0;
+    }
+    .brand-hero-badge {
+      width: 64px !important;
+      height: 64px !important;
+      min-width: 64px !important;
+      max-width: 64px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ff5722, #ff8a00);
+      color: #ffffff;
+      box-shadow: 0 8px 24px rgba(255, 87, 34, 0.45);
       flex-shrink: 0;
     }
     .logo-icon-wrap.small {
@@ -47,7 +67,30 @@
       width: 20px !important;
       height: 20px !important;
     }
-    /* إخفاء النوافذ المنبثقة افتراضياً حتى يطلبها المستخدم */
+    /* زر السلة العائم الدائم في أعلى يسار الشاشة */
+    .floating-top-cart-btn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ff5722 0%, #ff8a00 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 9999px;
+      padding: 6px 14px 6px 10px;
+      box-shadow: 0 4px 20px rgba(255, 87, 34, 0.45), 0 2px 10px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+    }
+    .floating-top-cart-btn.cart-bump {
+      transform: scale(1.12);
+    }
+    /* إخفاء النوافذ المنبثقة افتراضياً */
     .modal-backdrop, .cart-drawer-backdrop {
       display: none;
     }
@@ -57,14 +100,35 @@
     .cart-drawer-backdrop.active {
       display: block !important;
     }
-    /* إعدادات الخلفية والخط لمنع الوميض الأبيض */
+    /* إعدادات الخلفية والخط وغلاف الموبايل */
     body {
-      background-color: #0f0f14;
+      background-color: #08080b;
       color: #f3f4f6;
       font-family: 'Tajawal', 'Cairo', sans-serif;
       margin: 0;
       padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+    }
+    .mobile-app-shell {
+      width: 100%;
+      max-width: 480px;
+      background-color: #0f0f14;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.75);
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    @media (max-width: 480px) {
+      .mobile-app-shell {
+        max-width: 100%;
+        box-shadow: none;
+      }
     }
   </style>
 
@@ -74,188 +138,168 @@
 </head>
 <body>
 
-  <!-- شريط الإعلان العلوي وحالة المطعم اللحظية -->
-  <div class="top-announcement">
-    <div class="container announcement-content">
-      <!-- يتم تحديث حالة المطعم تلقائياً بواسطة JavaScript بناءً على ساعات العمل -->
-      <div class="status-indicator" id="restaurantStatusIndicator">
-        <span class="status-dot" id="statusDot"></span>
-        <span class="status-text" id="statusText">المطعم مفتوح الآن لاستقبال طلباتكم</span>
-      </div>
-      <div class="announcement-promo">
-        <i class="fa-solid fa-fire"></i>
-        <span>أقوى عروض القرمشة من <strong>زنجر كينج</strong> - اطلب الآن عبر واتساب!</span>
-      </div>
-      <div class="top-links">
-        <a href="https://wa.me/201030104997" target="_blank" class="top-link">
-          <i class="fa-brands fa-whatsapp text-whatsapp"></i> واتساب: <span dir="ltr">01030104997</span>
-        </a>
+  <!-- زر سلة الطلبات العائم الدائم في أعلى يسار الشاشة -->
+  <button class="floating-top-cart-btn" id="floatingCartBtn" aria-label="عرض سلة الطلبات">
+    <div class="floating-cart-icon-box">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span class="cart-count" id="cartCountBadge">0</span>
+    </div>
+    <div class="floating-cart-info">
+      <span class="floating-cart-label">السلة</span>
+      <span class="cart-total-preview" id="cartTotalPreview">0.00 ج.م</span>
+    </div>
+  </button>
+
+  <!-- غلاف تطبيق الموبايل (Mobile App Shell) -->
+  <div class="mobile-app-shell">
+
+    <!-- شريط الإعلان وحالة المطعم اللحظية -->
+    <div class="top-announcement">
+      <div class="announcement-content">
+        <div class="status-indicator" id="restaurantStatusIndicator">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-text" id="statusText">المطعم مفتوح الآن لاستقبال طلباتكم</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- الهيدر الرئيسي (Header) -->
-  <header class="site-header" id="siteHeader">
-    <div class="container header-container">
-      <!-- الشعار واسم المطعم (يدعم صورة لوجو خارجية مع بديل SVG متقن لزنجر كينج) -->
-      <a href="#" class="brand-logo" aria-label="الصفحة الرئيسية لمطعم زنجر كينج">
-        <div class="logo-icon-wrap" id="logoContainer" style="width: 48px; height: 48px; min-width: 48px; max-width: 48px; display: inline-flex; align-items: center; justify-content: center;">
-          <!-- شعار التاج والنار المخصص لـ زنجر كينج (Zinger King) -->
-          <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28" style="width: 28px; height: 28px; max-width: 28px; display: block;">
-            <!-- تاج الملك مع شعلة القرمشة -->
+    <!-- هيدر الشعار الملكي الاحترافي لمطعم زنجر كينج في أول الصفحة -->
+    <header class="mobile-brand-hero">
+      <div class="brand-hero-glow"></div>
+      
+      <div class="brand-hero-header-row">
+        <!-- الشعار الملكي المتوهج لزنجر كينج -->
+        <div class="brand-hero-badge" id="logoContainer">
+          <svg class="flame-svg" viewBox="0 0 24 24" fill="currentColor" width="36" height="36" style="width: 36px; height: 36px; max-width: 36px; display: block;">
             <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V17H19V19Z"/>
           </svg>
         </div>
-        <div class="brand-details">
-          <h1 class="brand-name">زنجر كينج</h1>
-          <span class="brand-tagline">ZINGER KING • أصل القرمشة والزنجر</span>
+
+        <div class="brand-hero-identity">
+          <h1 class="brand-hero-name">زنجر كينج</h1>
+          <span class="brand-hero-tagline">ZINGER KING • أصل القرمشة والزنجر 👑</span>
         </div>
-      </a>
+      </div>
 
-      <!-- أزرار العمل السريعة -->
-      <div class="header-actions">
-        <!-- رابط صفحة الفيسبوك الرسمية -->
-        <a href="https://www.facebook.com/share/1C2rnMrFho/" target="_blank" class="action-btn fb-header-btn" aria-label="صفحة الفيسبوك">
-          <i class="fa-brands fa-facebook-f"></i>
-          <span class="btn-text">فيسبوك</span>
-        </a>
+      <!-- ساعات العمل الرسمية -->
+      <div class="brand-hero-status-row">
+        <div class="working-hours-pill">
+          <i class="fa-regular fa-clock text-accent"></i>
+          <span>ساعات العمل: يومياً من 11:00 ص حتى 3:00 ص</span>
+        </div>
+      </div>
 
-        <!-- زر التمرير إلى البحث -->
-        <button class="action-btn search-toggle-btn" id="searchFocusBtn" aria-label="بحث في الوجبات">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <span class="btn-text">بحث</span>
-        </button>
-
-        <!-- زر الاتصال السريع (يفتح نافذة للأرقام الثلاثة) -->
-        <button class="action-btn call-btn" id="callPopupBtn" aria-label="أرقام الهاتف والاتصال">
+      <!-- أزرار التواصل والطلب السريع -->
+      <div class="brand-hero-actions">
+        <button class="hero-action-pill call-pill" id="callPopupBtn" aria-label="أرقام الهاتف والاتصال">
           <i class="fa-solid fa-phone"></i>
-          <span class="btn-text">اتصل بنا</span>
+          <span>اتصل بنا</span>
         </button>
+        <a href="https://wa.me/201030104997" target="_blank" class="hero-action-pill wa-pill" aria-label="واتساب">
+          <i class="fa-brands fa-whatsapp text-whatsapp"></i>
+          <span dir="ltr">01030104997</span>
+        </a>
+        <a href="https://www.facebook.com/share/1C2rnMrFho/" target="_blank" class="hero-action-pill fb-pill" aria-label="فيسبوك">
+          <i class="fa-brands fa-facebook-f text-fb"></i>
+          <span>فيسبوك</span>
+        </a>
+      </div>
+    </header>
 
-        <!-- زر سلة الطلبات التفاعلية -->
-        <button class="cart-trigger-btn" id="cartTriggerBtn" aria-label="عرض سلة الطلبات">
-          <div class="cart-icon-wrapper">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span class="cart-count" id="cartCountBadge">0</span>
+    <!-- نافذة منبثقة لاختيار رقم الاتصال المباشر -->
+    <div class="modal-backdrop phone-modal" id="phoneModal" aria-hidden="true">
+      <div class="modal-dialog small-dialog">
+        <button class="modal-close-btn" id="phoneModalCloseBtn" aria-label="إغلاق">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="phone-modal-body">
+          <div class="phone-modal-header">
+            <div class="phone-icon-circle"><i class="fa-solid fa-phone-volume"></i></div>
+            <h3>اتصل بمطعم زنجر كينج</h3>
+            <p>يسعدنا استقبال اتصالاتكم وطلبات التوصيل عبر الأرقام التالية:</p>
           </div>
-          <span class="cart-total-preview" id="cartTotalPreview">0.00 ج.م</span>
+          <div class="phone-numbers-list">
+            <a href="tel:01122268081" class="phone-item-btn">
+              <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 1:</span>
+              <span class="phone-val" dir="ltr">01122268081</span>
+            </a>
+            <a href="tel:01122268180" class="phone-item-btn">
+              <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 2:</span>
+              <span class="phone-val" dir="ltr">01122268180</span>
+            </a>
+            <a href="tel:01122268070" class="phone-item-btn">
+              <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 3:</span>
+              <span class="phone-val" dir="ltr">01122268070</span>
+            </a>
+            <a href="https://wa.me/201030104997" target="_blank" class="phone-item-btn whatsapp-item">
+              <span class="phone-label"><i class="fa-brands fa-whatsapp"></i> طلبات واتساب:</span>
+              <span class="phone-val" dir="ltr">01030104997</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- شريط البحث والفلترة السريعة -->
+    <section class="mobile-search-section">
+      <div class="search-input-group">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          id="menuSearchInput" 
+          class="menu-search-input" 
+          placeholder="ابحث عن وجبتك (زنجر، سوبر، ريزو، استربس، حار...)" 
+          autocomplete="off"
+        >
+        <button class="clear-search-btn" id="clearSearchBtn" aria-label="مسح البحث" style="display: none;">
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-    </div>
-  </header>
 
-  <!-- نافذة منبثقة لاختيار رقم الاتصال المباشر -->
-  <div class="modal-backdrop phone-modal" id="phoneModal" aria-hidden="true">
-    <div class="modal-dialog small-dialog">
-      <button class="modal-close-btn" id="phoneModalCloseBtn" aria-label="إغلاق">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="phone-modal-body">
-        <div class="phone-modal-header">
-          <div class="phone-icon-circle"><i class="fa-solid fa-phone-volume"></i></div>
-          <h3>اتصل بمطعم زنجر كينج</h3>
-          <p>يسعدنا استقبال اتصالاتكم وطلبات التوصيل عبر الأرقام التالية:</p>
-        </div>
-        <div class="phone-numbers-list">
-          <a href="tel:01122268081" class="phone-item-btn">
-            <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 1:</span>
-            <span class="phone-val" dir="ltr">01122268081</span>
-          </a>
-          <a href="tel:01122268180" class="phone-item-btn">
-            <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 2:</span>
-            <span class="phone-val" dir="ltr">01122268180</span>
-          </a>
-          <a href="tel:01122268070" class="phone-item-btn">
-            <span class="phone-label"><i class="fa-solid fa-phone"></i> خط ساخن 3:</span>
-            <span class="phone-val" dir="ltr">01122268070</span>
-          </a>
-          <a href="https://wa.me/201030104997" target="_blank" class="phone-item-btn whatsapp-item">
-            <span class="phone-label"><i class="fa-brands fa-whatsapp"></i> طلبات واتساب:</span>
-            <span class="phone-val" dir="ltr">01030104997</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- القسم الترحيبي والبحث والفلترة السريعة (Hero & Quick Controls) -->
-  <section class="menu-hero-section">
-    <div class="container hero-content">
-      <div class="hero-badge">
-        <i class="fa-solid fa-crown"></i> ملوك الزنجر والقرمشة الذهبية
-      </div>
-      <h2 class="hero-title">منيو مطعم زنجر كينج</h2>
-      <p class="hero-description">
-        استمتع بأشهى ساندوتشات الزنجر الكرانشي، قطع الفرايد تشيكن المقرمشة بالتتبيلة الملكية السرية، وأطباق الريزو والبطاطس بالجبنة.
-      </p>
-
-      <!-- شريط البحث الفوري -->
-      <div class="search-bar-wrapper">
-        <div class="search-input-group">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input 
-            type="text" 
-            id="menuSearchInput" 
-            class="menu-search-input" 
-            placeholder="ابحث عن وجبتك (زنجر، سوبر، ريزو، استربس، حار...)" 
-            autocomplete="off"
-          >
-          <button class="clear-search-btn" id="clearSearchBtn" aria-label="مسح البحث" style="display: none;">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- فلاتر التخصيص السريعة (Dietary & Highlights) -->
       <div class="quick-filters-row">
-        <span class="filters-label"><i class="fa-solid fa-filter"></i> فلاتر سريعة:</span>
         <button class="diet-filter-pill active" data-filter="all">الكل</button>
         <button class="diet-filter-pill" data-filter="bestseller"><i class="fa-solid fa-star"></i> الأكثر طلباً ⭐</button>
         <button class="diet-filter-pill" data-filter="spicy"><i class="fa-solid fa-pepper-hot"></i> حار نار 🌶️</button>
-        <button class="diet-filter-pill" data-filter="family"><i class="fa-solid fa-users"></i> عروض عائلية 👨‍👩‍👧‍👦</button>
-        <button class="diet-filter-pill" data-filter="new"><i class="fa-solid fa-sparkles"></i> جديد كينج ✨</button>
+        <button class="diet-filter-pill" data-filter="family"><i class="fa-solid fa-users"></i> عائلية 👨‍👩‍👧‍👦</button>
+        <button class="diet-filter-pill" data-filter="new"><i class="fa-solid fa-sparkles"></i> جديد ✨</button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- شريط تصنيفات الأطعمة التفاعلي (Sticky Category Navigation) -->
-  <nav class="categories-nav-sticky" id="categoriesNav">
-    <div class="container categories-container">
+    <!-- شريط تصنيفات الأطعمة التفاعلي مع الصور بالترتيب -->
+    <nav class="categories-nav-sticky" id="categoriesNav">
       <div class="categories-scroll-track" id="categoriesTrack">
-        <!-- أزرار تصنيفات زنجر كينج -->
         <button class="category-tab active" data-category="all">
-          <span class="tab-icon"><i class="fa-solid fa-utensils"></i></span>
+          <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=200&q=80" alt="جميع الأصناف" class="cat-tab-thumb">
           <span class="tab-title">جميع الأصناف</span>
           <span class="tab-count" id="count-all">0</span>
         </button>
         <button class="category-tab" data-category="zinger">
-          <span class="tab-icon"><i class="fa-solid fa-burger"></i></span>
+          <img src="https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=200&q=80" alt="ساندوتشات الزنجر" class="cat-tab-thumb">
           <span class="tab-title">ساندوتشات الزنجر</span>
           <span class="tab-count" id="count-zinger">0</span>
         </button>
         <button class="category-tab" data-category="meals">
-          <span class="tab-icon"><i class="fa-solid fa-drumstick-bite"></i></span>
+          <img src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=200&q=80" alt="وجبات الفرايد تشيكن" class="cat-tab-thumb">
           <span class="tab-title">وجبات الفرايد تشيكن</span>
           <span class="tab-count" id="count-meals">0</span>
         </button>
         <button class="category-tab" data-category="appetizers">
-          <span class="tab-icon"><i class="fa-solid fa-bowl-food"></i></span>
-          <span class="tab-title">الريزو والمقبلات والبطاطس</span>
+          <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=200&q=80" alt="الريزو والمقبلات" class="cat-tab-thumb">
+          <span class="tab-title">الريزو والمقبلات</span>
           <span class="tab-count" id="count-appetizers">0</span>
         </button>
         <button class="category-tab" data-category="drinks">
-          <span class="tab-icon"><i class="fa-solid fa-glass-water"></i></span>
+          <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=200&q=80" alt="المشروبات والصودا" class="cat-tab-thumb">
           <span class="tab-title">المشروبات والصودا</span>
           <span class="tab-count" id="count-drinks">0</span>
         </button>
         <button class="category-tab" data-category="desserts">
-          <span class="tab-icon"><i class="fa-solid fa-ice-cream"></i></span>
+          <img src="https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?auto=format&fit=crop&w=200&q=80" alt="الحلويات" class="cat-tab-thumb">
           <span class="tab-title">الحلويات</span>
           <span class="tab-count" id="count-desserts">0</span>
         </button>
       </div>
-    </div>
-  </nav>
+    </nav>
 
   <!-- المنطقة الرئيسية لعرض شبكة المنتجات (Products Section) -->
   <main class="menu-main-content">
@@ -519,6 +563,7 @@
       </div>
     </div>
   </footer>
+  </div><!-- /.mobile-app-shell -->
 
   <!-- زر الصعود للأعلى السلس -->
   <button class="scroll-top-btn" id="scrollTopBtn" aria-label="الصعود لأعلى الصفحة">
